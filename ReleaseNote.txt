@@ -1,0 +1,38 @@
+Release Notification
+***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.11)               		 07-11-2021
+
+ File name : CarPowerBank_Source_0711
+ Base on   : CarPowerBank_Source_0701
+
+ Notification:
+ Fixed:
+    1.> Fix switch wakeup failed issue.
+
+ Modified:
+    1.> Modify RSOC calculation to use coulomb counter.
+    2.> Move RSOC calculation to every 1 second.
+    3.> Remove error LED.
+    4.> Remove fault state of charging process.
+
+ Add function:
+    1.> Add RSOC calculation.
+
+***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.1)               		 07-01-2021
+
+ File name : CarPowerBank_Source_0701
+ Base on   : CarPowerBank_Source_0626
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Change Status green and red LED to high turn on, low turn off.
+    2.> Relay R-Sense change to 0.4mOhm, charge R-Sense change to 13mOhm
+    3.> Enable low power mode.
+    4.> Change discharge process enabled by switch instead of relay voltage
+        detection.
+
+ Add function:
+
+***************************************************************************

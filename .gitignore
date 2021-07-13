@@ -1,0 +1,4 @@
+Keil/lst/
+Keil/obj/
+!*.hex
+*.bak
