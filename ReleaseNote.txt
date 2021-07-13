@@ -1,5 +1,19 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.14)               		 07-14-2021
+
+ File name : CarPowerBank_Source_0714
+ Base on   : CarPowerBank_Source_0711
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Change to turn on relay if relay voltage above 2V is detected.
+    2.> Turn off relay before entering LPM.
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.7.11)               		 07-11-2021
 
  File name : CarPowerBank_Source_0711
