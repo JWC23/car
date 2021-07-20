@@ -21,8 +21,7 @@ static void DisplayDebugMsg(void);
 
 vuint16_t g_u16SystemState = 0;     //!< System states, each bit indicates different status.
 vuint8_t g_u16SystemFlags = 0;      //!< System flags, each bit indicates different flags.
-
-
+uint32_t g_u32FwVer = 0;
 
 
 //*****************************************************************************
@@ -42,6 +41,7 @@ static void OneHundredMsHandler(void)
     UpdateAllAdcData();
     PowerControl();
     RelayControl();
+    CheckResetRelayCounter();
 }
 
 
@@ -70,7 +70,16 @@ static void OneSecondHandler(void)
     #endif
 }
 
+
+
 #if DEBUG_MSG_EN
+//*****************************************************************************
+//
+//! \brief  Send UART debug messages.
+//!
+//! \return None.
+//
+//*****************************************************************************
 static void DisplayDebugMsg(void)
 {
     printf("ADP(%d) PCK(%d) Chg(%d) Dchg(%d) RLY(%d) COF(%04X) DOF(%04X) SVRLY(%d)",
@@ -107,9 +116,6 @@ int main(void)
     /* Init System, peripheral clock and multi-function I/O */
     SYS_Init();
 
-    /* Lock protected registers */
-    SYS_LockReg();
-
     /* Init UART0 for printf */
     UART0_Init();
 
@@ -121,10 +127,34 @@ int main(void)
     // {
         // printf("test\n");
     // }
+    
+    /* Enable FMC ISP function */
+    FMC_Open();
+    
+    if ( !SetIAPBoot() )
+    {
+        #if DEBUG_MSG_EN
+        printf("Failed to set IAP boot mode!\n");
+        #endif
+    }
 
     #if DEBUG_MSG_EN
-    printf("\n========== V%d.%d.%d ==========\n", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_TEST);
+    printf("\n========== V%02X.%02X.%02X ==========\n", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_TEST);
     #endif
+    
+    RelayVar_Init();
+
+    g_u32FwVer = FMC_Read(FLASH_ADDR_FW_VER);
+    
+    /* Lock protected registers */
+    SYS_LockReg();
+
+    // Update FW version.
+    if ( g_u32FwVer != DWORD(0, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_TEST) )
+    {
+        EraseAPROMArea(FLASH_ADDR_FW_VER, FLASH_ADDR_FW_VER+FMC_FLASH_PAGE_SIZE);
+        WriteAPROM(FLASH_ADDR_FW_VER, &g_u32FwVer, 1);
+    }
 
     while(1)
     {

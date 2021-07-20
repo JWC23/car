@@ -89,9 +89,10 @@ void UpdateAllAdcData(void)
 
     u16Val = ADC_Read(ADC_SV_AD);
     g_sAdcData.u16AdapterVolt = ConvertVoltage(u16Val);
-    // u16Val = ADC_Read(ADC_SV_RELAY);
-    // g_sAdcData.u16RelayVolt = ConvertVoltage(u16Val);
-    g_sAdcData.u16RelayVolt = ADC_Read(ADC_SV_RELAY);
+
+    u16Val = ADC_Read(ADC_SV_RELAY);
+    g_sAdcData.u16RelayVolt = ConvertVoltage(u16Val);
+    // g_sAdcData.u16RelayVolt = ADC_Read(ADC_SV_RELAY);
 
     g_sAdcData.u16DOF = ADC_Read(ADC_DOF);
     g_sAdcData.u16COF = ADC_Read(ADC_COF);
@@ -151,7 +152,9 @@ void PowerControl(void)
             if ( ++u8RelayDetectCntr >= 50 )    // 5 secs
             {
                 u8RelayDetectCntr = 0;
-                if ( g_sAdcData.u16RelayVolt >= 248 )  // 2V
+
+                // Allow turn on relay when pack > 16V and relay > 2V
+                if ( (g_sAdcData.u16RelayVolt >= 2000)  && (g_sAdcData.u16PackVolt >= 16000) )
                 {
                     g_bRelayTurnOn = TRUE;
                 }

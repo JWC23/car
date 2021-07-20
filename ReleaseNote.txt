@@ -1,5 +1,33 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.20)               		 07-20-2021
+
+ File name : CarPowerBank_Source_0720
+ Base on   : CarPowerBank_Source_0719
+
+ Notification:
+ Fixed:
+ Modified:
+ Add function:
+    1.> After press discharge switch for 10 secs, reset relay on/off counter.
+
+***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.19)               		 07-19-2021
+
+ File name : CarPowerBank_Source_0719
+ Base on   : CarPowerBank_Source_0714
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Do not allow turn on relay when pack voltage is less than 16V.
+    2.> Do not allow tuen on relay when relay tuen on/off more than 
+        50000 times.
+
+ Add function:
+    1.> Add FMC function for data flash read/write.
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.7.14)               		 07-14-2021
 
  File name : CarPowerBank_Source_0714

@@ -69,6 +69,11 @@ void Switch_DischargeControl(void)
         if ( u8SwitchDchgCntr < 0xFF )
             u8SwitchDchgCntr++;
 
+        if ( u8SwitchDchgCntr == 100 )
+        {
+            SET_BIT(g_u16SystemFlags, SYS_FLAG_RESET_RELAY_CNTR);
+        }
+
         // if ( u8SwitchDchgCntr >= 50 )
         // {
         //     bLongPress = TRUE;

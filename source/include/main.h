@@ -16,11 +16,12 @@
 #include "defs.h"
 #include "io.h"
 #include "utils.h"
+#include "fmc.h"
 
 
 #define     FW_VERSION_MAJOR        0
-#define     FW_VERSION_MINOR        7
-#define     FW_VERSION_TEST         14
+#define     FW_VERSION_MINOR        0x07
+#define     FW_VERSION_TEST         0x20
 #define     PROJECT_NAME            "CarPowerBank"
 
 #define     DEBUG_MSG_EN            1
@@ -29,6 +30,10 @@
 #define     RELAY_DETECTION         1
 #define     ERROR_LED_EN            0
 
+#define     RELAY_ONOFF_LIMIT       50000
+
+#define     FLASH_ADDR_FW_VER       0x1F000
+#define     FLASH_ADDR_RELAY_ONOFF  0x1F200
 
 #define     FAST_CHARGE_TIMEOUT     252000      // 7 hours
 
@@ -98,7 +103,7 @@ enum eSystemFlags
     SYS_FLAG_SW_1W_LED      = MASK(2),
     SYS_FLAG_DCHG_EN        = MASK(3),
     SYS_FLAG_RELAY_CURR_DETECTED = MASK(4),
-    SYS_FLAG_5              = MASK(5),
+    SYS_FLAG_RESET_RELAY_CNTR    = MASK(5),
     SYS_FLAG_6              = MASK(6),
     SYS_FLAG_7              = MASK(7)
 };

@@ -10,10 +10,13 @@
 #define RELAY_H_
 
 
-extern void RelayControl(void);
-
 
 extern bool g_bRelayTurnOn;
+
+
+extern void RelayVar_Init(void);
+extern void RelayControl(void);
+extern void CheckResetRelayCounter(void);
 
 
 

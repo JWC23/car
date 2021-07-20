@@ -527,6 +527,11 @@
               <FileType>1</FileType>
               <FilePath>..\Library\StdDriver\src\gpio.c</FilePath>
             </File>
+            <File>
+              <FileName>fmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Library\StdDriver\src\fmc.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
