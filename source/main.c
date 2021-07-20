@@ -56,7 +56,7 @@ static void OneHundredMsHandler(void)
 //*****************************************************************************
 static void OneSecondHandler(void)
 {
-    // float fAdcVolt = 0;
+    // static uint8_t u8TestCntr = 0;
 
     if ( IS_BIT_CLR(g_u16SystemFlags, SYS_FLAG_1SEC) )
         return;
@@ -68,6 +68,12 @@ static void OneSecondHandler(void)
     #if DEBUG_MSG_EN
     DisplayDebugMsg();
     #endif
+
+    // if ( ++u8TestCntr >= 5 )
+    // {
+    //     u8TestCntr = 0;
+    //     ResetToLDROM();
+    // }
 }
 
 
@@ -127,10 +133,10 @@ int main(void)
     // {
         // printf("test\n");
     // }
-    
+
     /* Enable FMC ISP function */
     FMC_Open();
-    
+
     if ( !SetIAPBoot() )
     {
         #if DEBUG_MSG_EN
@@ -141,11 +147,11 @@ int main(void)
     #if DEBUG_MSG_EN
     printf("\n========== V%02X.%02X.%02X ==========\n", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_TEST);
     #endif
-    
+
     RelayVar_Init();
 
     g_u32FwVer = FMC_Read(FLASH_ADDR_FW_VER);
-    
+
     /* Lock protected registers */
     SYS_LockReg();
 

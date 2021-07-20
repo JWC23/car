@@ -35,7 +35,7 @@ void RelayVar_Init(void)
 {
     uint16_t i;
     uint32_t u32ReadData = 0, u32PrevReadData = 0;
-    
+
     for ( i = 0; i < FMC_FLASH_PAGE_SIZE; i+=4 )
     {
         u32ReadData = FMC_Read(FLASH_ADDR_RELAY_ONOFF+i);
@@ -48,10 +48,10 @@ void RelayVar_Init(void)
 
         u32PrevReadData = u32ReadData;
     }
-    
+
     // If all values in the flash page are written, then start writing from index 0.
     g_u16FlashRelayIdx = 0;
-    g_u32RelayOnOffTimes = FMC_Read(FLASH_ADDR_FW_VER);
+    g_u32RelayOnOffTimes = FMC_Read(FLASH_ADDR_RELAY_ONOFF);
 
 }
 
@@ -70,9 +70,9 @@ static void StoreRelayOnOffTimes(void)
     {
         EraseAPROMArea(FLASH_ADDR_RELAY_ONOFF, FLASH_ADDR_RELAY_ONOFF+FMC_FLASH_PAGE_SIZE);
     }
-    
+
     WriteAPROM(FLASH_ADDR_RELAY_ONOFF + g_u16FlashRelayIdx, &g_u32RelayOnOffTimes, 1);
-    
+
     g_u16FlashRelayIdx += 4;
 
     if ( g_u16FlashRelayIdx >= FMC_FLASH_PAGE_SIZE )

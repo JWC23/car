@@ -144,6 +144,8 @@ bool SetIAPBoot(void)
 
 void ResetToLDROM(void)
 {
+    UART_WAIT_TX_EMPTY(UART0);
+
     SYS_UnlockReg();
     /* Mask all interrupt before changing VECMAP to avoid wrong interrupt handler fetched */
     __set_PRIMASK(1);
