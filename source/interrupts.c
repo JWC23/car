@@ -10,11 +10,13 @@
 #include "adc_func.h"
 #include "led.h"
 #include "switch.h"
+#include "uart_func.h"
+
 
 
 static uint8_t g_u8TimerCntr = 0;      //!< Timer counter, add 1 when interrupt occurs.
-static uint8_t g_u8UARTOnOffCntr = 0;
-
+// static uint8_t g_u8UARTOnOffCntr = 0;
+static uint8_t g_u8UartIdleCntr = 0;
 
 //*****************************************************************************
 //
@@ -35,28 +37,44 @@ void TMR0_IRQHandler(void)
         Switch_1WDetect();
         Switch_DischargeControl();
         LED_Control();
+        // LED_GREEN_TOGGLE();
+
+        // Clear Rx index if it idle for over 2 secs.
+        if ( g_u8UartRxIdx )
+        {
+            if ( ++g_u8UartIdleCntr >= 20 )
+            {
+                g_u8UartIdleCntr = 0;
+                g_u8UartRxIdx = 0;
+            }
+        }
+        else
+        {
+            g_u8UartIdleCntr = 0;
+        }
 
         if ( ++g_u8TimerCntr >= 10 )
         {
             g_u8TimerCntr = 0;
             SET_BIT(g_u16SystemFlags, SYS_FLAG_1SEC);
+            // LED_GREEN_TOGGLE();
         }
 
-        if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_UART_ENABLE) )
-        {
-            if ( ++g_u8UARTOnOffCntr >= 100 )
-            {
-                g_u8UARTOnOffCntr = 0;
+        // if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_UART_ENABLE) )
+        // {
+            // if ( ++g_u8UARTOnOffCntr >= 100 )
+            // {
+                // g_u8UARTOnOffCntr = 0;
                 // CLR_BIT(g_u16SystemState, SYS_STAT_UART_ENABLE);
-            }
+            // }
             // TXRX_ENABLE();
-            LED_GREEN_TOGGLE();
-        }
-        else
-        {
-            TXRX_DISABLE();
-            LED_GREEN_OFF();
-        }
+            // LED_GREEN_TOGGLE();
+        // }
+        // else
+        // {
+            // TXRX_DISABLE();
+            // LED_GREEN_OFF();
+        // }
 
     }
 }
@@ -107,4 +125,53 @@ void GPIOP0P1_IRQHandler(void)
         // printf("Un-expected interrupts.\n");
     }
 }
+
+
+
+/*---------------------------------------------------------------------------------------------------------*/
+/* ISR to handle UART Channel 0 interrupt event                                                            */
+/*---------------------------------------------------------------------------------------------------------*/
+void UART0_IRQHandler(void)
+{
+    uint8_t u8InChar = 0xFF;
+    uint32_t u32IntSts = UART0->ISR;
+
+    if ( u32IntSts & UART_ISR_RDA_INT_Msk )
+    {
+        /* Get all the input characters */
+        while ( UART_IS_RX_READY(UART0) )
+        {
+            /* Get the character from UART Buffer */
+            u8InChar = UART_READ(UART0);
+
+            // printf("%c ", u8InChar);
+
+            // if(u8InChar == '0')
+            // {
+                // g_bWait = FALSE;
+            // }
+
+            /* Check if buffer full */
+            if ( g_u8UartRxIdx < (UART_BUFF_SIZE - 1) )
+            {
+                g_au8UartRxBuff[g_u8UartRxIdx++] = u8InChar;
+                if ( u8InChar == '\r' )
+                {
+                    g_u8UartCmdInt = 1;
+                }
+            }
+
+            // if ( g_u32comRbytes < RXBUFSIZE )
+            // {
+                // /* Enqueue the character */
+                // g_u8RecData[g_u32comRtail] = u8InChar;
+                // g_u32comRtail = (g_u32comRtail == (RXBUFSIZE - 1)) ? 0 : (g_u32comRtail + 1);
+                // g_u32comRbytes++;
+            // }
+        }
+        // printf("\nTransmission Test:");
+    }
+}
+
+
 

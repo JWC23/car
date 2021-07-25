@@ -19,8 +19,9 @@
 #define     SW_1WLED_INACTIVE()         (P01 == 1)
 
 #define     P06_TXRX_EN                 P0, BIT6
-#define     TXRX_ENABLE()               (P06 = 1)
-#define     TXRX_DISABLE()              (P06 = 0)
+#define     TXRX_ENABLE()               (P06 = 0)
+#define     TXRX_DISABLE()              (P06 = 1)
+#define     TXRX_EN_STAT()              (P06 == 1)
 
 #define     P07_CTLD2_EN                P0, BIT7
 #define     CTLD2_EN_HIGH()             (P07 = 1)

@@ -9,6 +9,10 @@
 #ifndef SWITCH_H_
 #define SWITCH_H_
 
+
+// extern uint8_t g_u8SwitchCntr;
+
+
 extern void Switch_1WDetect(void);
 extern void Switch_DischargeControl(void);
 

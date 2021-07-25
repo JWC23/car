@@ -21,7 +21,7 @@
 
 #define     FW_VERSION_MAJOR        0
 #define     FW_VERSION_MINOR        0x07
-#define     FW_VERSION_TEST         0x20
+#define     FW_VERSION_TEST         0x25
 #define     PROJECT_NAME            "CarPowerBank"
 
 #define     DEBUG_MSG_EN            1

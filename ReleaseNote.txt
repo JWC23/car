@@ -1,5 +1,22 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.25)               		 07-25-2021
+
+ File name : CarPowerBank_Source_0725
+ Base on   : CarPowerBank_Source_0720
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Use 1W and discharge button for enable ISP.
+    2.> Avoid entering idle mode if 1W LED is on.
+    3.> Add uart function.
+    4.> Modify system clock to use PLL.
+
+ Add function:
+    1.> Add ISP function.
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.7.20)               		 07-20-2021
 
  File name : CarPowerBank_Source_0720

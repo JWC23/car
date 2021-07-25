@@ -10,6 +10,7 @@
 #include "utils.h"
 
 
+typedef void (FUNC_PTR)(void);
 
 
 //*****************************************************************************
@@ -142,21 +143,61 @@ bool SetIAPBoot(void)
 }
 
 
+bool SetBootFromLDROM(void)
+{
+    uint32_t au32Config[2];
+
+    SYS_UnlockReg();
+    
+    FMC_ReadConfig(au32Config, 2);
+    if ( au32Config[0] & 0x80 )
+    {
+        FMC_EnableConfigUpdate();
+        au32Config[0] &= ~0x80;
+        FMC_Erase(FMC_CONFIG_BASE);
+        if ( FMC_WriteConfig(au32Config, 2) < 0 )
+            return FALSE;
+
+        // Perform chip reset to make new User Config take effect
+        SYS_ResetChip();
+    }
+    
+    return TRUE;
+}
+
+
+
 void ResetToLDROM(void)
 {
+    FUNC_PTR    *ResetFunc;
+    
     UART_WAIT_TX_EMPTY(UART0);
 
     SYS_UnlockReg();
+    
     /* Mask all interrupt before changing VECMAP to avoid wrong interrupt handler fetched */
     __set_PRIMASK(1);
 
     /* Set VECMAP to LDROM for booting from LDROM */
     FMC_SetVectorPageAddr(FMC_LDROM_BASE);
 
-    /* Software reset to boot to LDROM */
-    NVIC_SystemReset();
+    /* Reset All IP before boot to new AP */
+    SYS->IPRSTC2 = 0xFFFFFFFF;
+    SYS->IPRSTC2 = 0;
 
-    SYS_LockReg();
+    /* Obtain Reset Handler address of new boot. */
+    ResetFunc = (FUNC_PTR *)M32(4);
+
+    /* Set Main Stack Pointer register of new boot */
+    __set_MSP(M32(0));
+
+    /* Call reset handler of new boot */
+    ResetFunc();
+                
+    /* Software reset to boot to LDROM */
+    // NVIC_SystemReset();
+
+    // SYS_LockReg();
 }
 
 

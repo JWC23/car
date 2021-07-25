@@ -135,7 +135,7 @@ void PowerControl(void)
     else
     {
         #if RELAY_DETECTION
-        if ( g_bRelayTurnOn )
+        if ( g_bRelayTurnOn || IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
         {
             DischargeProcess();
 

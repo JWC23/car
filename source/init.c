@@ -10,8 +10,8 @@
 #include "init.h"
 
 
-// #define PLLCON_SETTING      CLK_PLLCON_50MHz_HXT        //!< 50Mhz PLL clock
-// #define PLL_CLOCK           50000000
+#define PLLCON_SETTING      CLK_PLLCON_50MHz_HIRC        //!< 50Mhz PLL clock
+#define PLL_CLOCK           50000000
 
 
 
@@ -28,76 +28,50 @@ void SYS_Init(void)
     /* Init System Clock                                                                                       */
     /*---------------------------------------------------------------------------------------------------------*/
     /* Enable IRC22M clock */
-    // CLK->PWRCON |= CLK_PWRCON_IRC22M_EN_Msk;
+    CLK->PWRCON |= CLK_PWRCON_OSC22M_EN_Msk;
 
-    // /* Waiting for IRC22M clock ready */
-    // CLK_WaitClockReady(CLK_CLKSTATUS_IRC22M_STB_Msk);
+    CLK->PLLCON = PLLCON_SETTING;
 
-    // /* Switch HCLK clock source to HIRC */
-    // CLK->CLKSEL0 = CLK_CLKSEL0_HCLK_S_HIRC;
+    /* Waiting for clock ready */
+    CLK_WaitClockReady(CLK_CLKSTATUS_PLL_STB_Msk | CLK_CLKSTATUS_OSC22M_STB_Msk);
 
-    // /* Set PLL to Power-down mode and PLL_STB bit in CLKSTATUS register will be cleared by hardware.*/
-    // CLK->PLLCON |= CLK_PLLCON_PD_Msk;
-
-    // /* Enable external 12 MHz XTAL, IRC10K */
-    // CLK->PWRCON |= CLK_PWRCON_XTL12M_EN_Msk | CLK_PWRCON_OSC10K_EN_Msk;
-
-    // /* Enable PLL and Set PLL frequency */
-    // CLK->PLLCON = PLLCON_SETTING;
-
-    // /* Waiting for clock ready */
-    // CLK_WaitClockReady(CLK_CLKSTATUS_PLL_STB_Msk | CLK_CLKSTATUS_XTL12M_STB_Msk | CLK_CLKSTATUS_IRC10K_STB_Msk);
-
-    // /* Switch HCLK clock source to PLL, STCLK to HCLK/2 */
-    // CLK->CLKSEL0 = CLK_CLKSEL0_STCLK_S_HCLK_DIV2 | CLK_CLKSEL0_HCLK_S_PLL;
-
-    // /* Enable peripheral clock */
-    // CLK->APBCLK = CLK_APBCLK_UART0_EN_Msk |
-    //               CLK_APBCLK_TMR0_EN_Msk;
-
-    // /* Peripheral clock source */
-    // CLK->CLKSEL1 = CLK_CLKSEL1_UART_S_PLL |
-    //                CLK_CLKSEL1_TMR0_S_HXT;
-
-    /* Enable clock source */
-    // CLK_EnableXtalRC(CLK_PWRCON_OSC10K_EN_Msk|CLK_PWRCON_OSC22M_EN_Msk);
-
-    // /* Waiting for clock source ready */
-    // CLK_WaitClockReady(CLK_CLKSTATUS_OSC10K_STB_Msk|CLK_CLKSTATUS_OSC22M_STB_Msk);
-
-    // /* Disable PLL first to avoid unstable when setting PLL */
-    // CLK_DisablePLL();
-
-    // /* Set PLL frequency */
-    // CLK->PLLCON = (CLK->PLLCON & ~(0x000FFFFFul)) | 0x0008D66Ful;
-
-    // /* Waiting for PLL ready */
-    // CLK_WaitClockReady(CLK_CLKSTATUS_PLL_STB_Msk);
-
-    // /* If the defines do not exist in your project, please refer to the related clk.h in the Header folder appended to the tool package. */
-    // /* Set HCLK clock */
-    // CLK_SetHCLK(CLK_CLKSEL0_HCLK_S_PLL, CLK_CLKDIV_HCLK(1));
-
-    /* Enable Internal RC 22.1184MHz clock */
-    CLK_EnableXtalRC(CLK_PWRCON_OSC22M_EN_Msk);
-
-    /* Waiting for Internal RC clock ready */
-    CLK_WaitClockReady(CLK_CLKSTATUS_OSC22M_STB_Msk);
-
-    /* Switch HCLK clock source to Internal RC and HCLK source divide 1 */
-    CLK_SetHCLK(CLK_CLKSEL0_HCLK_S_HIRC, CLK_CLKDIV_HCLK(1));
+    /* Switch HCLK clock source to PLL */
+    CLK->CLKSEL0 = CLK_CLKSEL0_HCLK_S_PLL;
 
     /* Enable IP clock */
-    CLK_EnableModuleClock(ADC_MODULE);
-    CLK_EnableModuleClock(TMR0_MODULE);
-    CLK_EnableModuleClock(UART0_MODULE);
+    CLK->APBCLK = CLK_APBCLK_UART0_EN_Msk | CLK_APBCLK_ADC_EN_Msk | CLK_APBCLK_TMR0_EN_Msk | CLK_APBCLK_WDT_EN_Msk;
+
+    /* Select IP clock source */
+    CLK->CLKSEL1 = CLK_CLKSEL1_UART_S_HIRC | CLK_CLKSEL1_ADC_S_HIRC | CLK_CLKSEL1_TMR0_S_HIRC | CLK_CLKSEL1_WDT_S_HCLK_DIV2048;
+
+    /* Update System Core Clock */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    //SystemCoreClockUpdate();
+    PllClock        = PLL_CLOCK;            // PLL
+    SystemCoreClock = PLL_CLOCK / 1;        // HCLK
+    CyclesPerUs     = PLL_CLOCK / 1000000;  // For SYS_SysTickDelay()
+
+    
+    /* Enable Internal RC 22.1184MHz clock */
+    // CLK_EnableXtalRC(CLK_PWRCON_OSC22M_EN_Msk);
+
+    /* Waiting for Internal RC clock ready */
+    // CLK_WaitClockReady(CLK_CLKSTATUS_OSC22M_STB_Msk);
+
+    /* Switch HCLK clock source to Internal RC and HCLK source divide 1 */
+    // CLK_SetHCLK(CLK_CLKSEL0_HCLK_S_HIRC, CLK_CLKDIV_HCLK(1));
+
+    /* Enable IP clock */
+    // CLK_EnableModuleClock(ADC_MODULE);
+    // CLK_EnableModuleClock(TMR0_MODULE);
+    // CLK_EnableModuleClock(UART0_MODULE);
     // CLK_EnableModuleClock(WDT_MODULE);
 
     /* Set IP clock */
-    CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL1_ADC_S_HIRC, CLK_CLKDIV_ADC(7));
-    CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0_S_HIRC, MODULE_NoMsk);
-    CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART_S_HIRC, CLK_CLKDIV_UART(1));
-    // CLK_SetModuleClock(WDT_MODULE, CLK_CLKSEL1_WDT_S_LIRC, MODULE_NoMsk);
+    // CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL1_ADC_S_HIRC, CLK_CLKDIV_ADC(7));
+    // CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0_S_HIRC, MODULE_NoMsk);
+    // CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART_S_HIRC, CLK_CLKDIV_UART(1));
+    // CLK_SetModuleClock(WDT_MODULE, CLK_CLKSEL1_WDT_S_HCLK_DIV2048, MODULE_NoMsk);
 
     /* Update System Core Clock */
     /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
@@ -110,13 +84,10 @@ void SYS_Init(void)
     SYS->P3_MFP &= ~(SYS_MFP_P30_Msk | SYS_MFP_P31_Msk);
     SYS->P3_MFP |= (SYS_MFP_P30_RXD0 | SYS_MFP_P31_TXD0);
 
-    /* Disable the P10~P15 digital input path to avoid the leakage current. */
-    // GPIO_DISABLE_DIGITAL_PATH(P1, 0x3F);
-
     /* Disable the P1.0 - P1.7 digital input path to avoid the leakage current */
     GPIO_DISABLE_DIGITAL_PATH(P1, 0xFF);
 
-    /* Configure the P1.0 - P1.3 ADC analog input pins */
+    /* Configure the P1.0 - P1.7 ADC analog input pins */
     SYS->P1_MFP &= ~(SYS_MFP_P10_Msk | SYS_MFP_P11_Msk | SYS_MFP_P12_Msk | SYS_MFP_P13_Msk | SYS_MFP_P14_Msk | SYS_MFP_P15_Msk | SYS_MFP_P16_Msk | SYS_MFP_P17_Msk);
     SYS->P1_MFP |= SYS_MFP_P10_AIN0 | SYS_MFP_P11_AIN1 | SYS_MFP_P12_AIN2 | SYS_MFP_P13_AIN3 | SYS_MFP_P14_AIN4 | SYS_MFP_P15_AIN5 | SYS_MFP_P16_AIN6 | SYS_MFP_P17_AIN7;
 
@@ -124,6 +95,15 @@ void SYS_Init(void)
     GPIO_EnableInt(P0, 1, GPIO_INT_FALLING);    // 1W LED switch
     // GPIO_EnableInt(P1, 0, GPIO_INT_RISING);
     NVIC_EnableIRQ(GPIO_P0P1_IRQn);
+    
+    /* Enable WDT interrupt function */
+    // WDT_EnableInt();
+
+    /* Enable WDT NVIC */
+    // NVIC_EnableIRQ(WDT_IRQn);
+    
+    // WDT_Open(WDT_TIMEOUT_2POW4, WDT_RESET_DELAY_3CLK, TRUE, FALSE);
+    // WDT_Open(WDT_TIMEOUT_2POW14, WDT_RESET_DELAY_1026CLK, TRUE, FALSE);
 }
 
 
@@ -137,6 +117,7 @@ void SYS_Init(void)
 void GPIO_Init(void)
 {
     TXRX_DISABLE();
+    // TXRX_ENABLE();
     CTLD2_EN_HIGH();
     CTLC2_EN_HIGH();
     LED_C25_OFF();
@@ -205,6 +186,10 @@ void UART0_Init(void)
 
     /* Configure UART0 and set UART0 Baudrate */
     UART_Open(UART0, 115200);
+    
+    // UART_ENABLE_INT(UART0, (UART_IER_RDA_IEN_Msk | UART_IER_THRE_IEN_Msk | UART_IER_RTO_IEN_Msk));
+    UART_ENABLE_INT(UART0, (UART_IER_RDA_IEN_Msk | UART_IER_RTO_IEN_Msk) );
+    NVIC_EnableIRQ(UART0_IRQn);
 }
 
 

@@ -11,6 +11,8 @@
 #include "power.h"
 #include "battery.h"
 #include "relay.h"
+#include "uart_func.h"
+// #include "switch.h"
 
 
 static void OneHundredMsHandler(void);
@@ -42,6 +44,7 @@ static void OneHundredMsHandler(void)
     PowerControl();
     RelayControl();
     CheckResetRelayCounter();
+    WDT_RESET_COUNTER();
 }
 
 
@@ -69,10 +72,12 @@ static void OneSecondHandler(void)
     DisplayDebugMsg();
     #endif
 
+    // printf("+");
+
     // if ( ++u8TestCntr >= 5 )
     // {
-    //     u8TestCntr = 0;
-    //     ResetToLDROM();
+        // u8TestCntr = 0;
+        // ResetToLDROM();
     // }
 }
 
@@ -93,7 +98,14 @@ static void DisplayDebugMsg(void)
         g_sAdcData.u16DischargeCurr, g_sAdcData.u16RelayCurr, g_sAdcData.u16COF,
         g_sAdcData.u16DOF, g_sAdcData.u16RelayVolt);
     if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
-        printf(" 1W ON");
+        printf(" (1W On)");
+    if ( SW_DIS_ACTIVE() )
+        printf(" (DisBtn On)");
+    // printf(" Dchg= %d", g_u8SwitchCntr);
+    // if ( TXRX_EN_STAT() )
+        // printf(" EN: high");
+    // else
+        // printf(" EN: low");
 
     if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_CHARGE) )
         printf(" Chg");
@@ -116,6 +128,8 @@ static void DisplayDebugMsg(void)
 //*****************************************************************************
 int main(void)
 {
+    // uint32_t u32TimerCntr = 0;
+
     /* Unlock protected registers */
     SYS_UnlockReg();
 
@@ -137,12 +151,12 @@ int main(void)
     /* Enable FMC ISP function */
     FMC_Open();
 
-    if ( !SetIAPBoot() )
-    {
-        #if DEBUG_MSG_EN
-        printf("Failed to set IAP boot mode!\n");
-        #endif
-    }
+    // if ( !SetIAPBoot() )
+    // {
+    //     #if DEBUG_MSG_EN
+    //     printf("Failed to set IAP boot mode!\n");
+    //     #endif
+    // }
 
     #if DEBUG_MSG_EN
     printf("\n========== V%02X.%02X.%02X ==========\n", FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_TEST);
@@ -153,7 +167,7 @@ int main(void)
     g_u32FwVer = FMC_Read(FLASH_ADDR_FW_VER);
 
     /* Lock protected registers */
-    SYS_LockReg();
+    // SYS_LockReg();
 
     // Update FW version.
     if ( g_u32FwVer != DWORD(0, FW_VERSION_MAJOR, FW_VERSION_MINOR, FW_VERSION_TEST) )
@@ -162,10 +176,27 @@ int main(void)
         WriteAPROM(FLASH_ADDR_FW_VER, &g_u32FwVer, 1);
     }
 
+    // if(WDT_GET_RESET_FLAG() == 1)
+    // {
+        // WDT_CLEAR_RESET_FLAG();
+        // printf("\n*** WDT time-out reset occurred ***\n");
+    // }
+
     while(1)
     {
         OneHundredMsHandler();
         OneSecondHandler();
+        UartRxHandler();
+
+        // if ( ++u32TimerCntr >= 100000 )
+        // {
+            // u32TimerCntr = 0;
+            // LED_GREEN_TOGGLE();
+            // WDT_RESET_COUNTER();
+            // WDT_Open(WDT_TIMEOUT_2POW4, WDT_RESET_DELAY_3CLK, TRUE, FALSE);
+            // printf("timeout\n");
+            // while(1);
+        // }
     }
 }
 
