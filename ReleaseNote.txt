@@ -1,5 +1,20 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.7.28)               		 07-28-2021
+
+ File name : CarPowerBank_Source_0728
+ Base on   : CarPowerBank_Source_0725
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Change EN_5V and EN_12V to active low.
+    2.> Change relay control by discharge switch.
+    3.> Change relay on/off period to 3 secs.
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.7.25)               		 07-25-2021
 
  File name : CarPowerBank_Source_0725

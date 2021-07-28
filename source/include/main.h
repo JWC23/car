@@ -21,13 +21,13 @@
 
 #define     FW_VERSION_MAJOR        0
 #define     FW_VERSION_MINOR        0x07
-#define     FW_VERSION_TEST         0x25
+#define     FW_VERSION_TEST         0x28
 #define     PROJECT_NAME            "CarPowerBank"
 
 #define     DEBUG_MSG_EN            1
 #define     TEST_PIN_EN             0
 #define     LOW_POWER_MODE_EN       1
-#define     RELAY_DETECTION         1
+#define     RELAY_DETECTION         0
 #define     ERROR_LED_EN            0
 
 #define     RELAY_ONOFF_LIMIT       50000

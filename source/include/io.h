@@ -87,14 +87,14 @@
 #define     CTLC2_EN_LOW()              (P32 = 0)
 
 #define     P33_EN_12V                  P3, BIT3        //!< 24V enable pin
-#define     EN_12V_ON()                 (P33 = 1)
-#define     EN_12V_OFF()                (P33 = 0)
+#define     EN_12V_ON()                 (P33 = 0)
+#define     EN_12V_OFF()                (P33 = 1)
 #define     EN_12V_TOGGLE()             (P33 ^= 1)
 #define     EN_12V_ACTIVE()             (P33 == 1)
 
 #define     P34_EN_5V                   P3, BIT4        //!< 5V enable pin
-#define     EN_5V_ON()                  (P34 = 1)
-#define     EN_5V_OFF()                 (P34 = 0)
+#define     EN_5V_ON()                  (P34 = 0)
+#define     EN_5V_OFF()                 (P34 = 1)
 #define     EN_5V_TOGGLE()              (P34 ^= 1)
 #define     EN_5V_ACTIVE()              (P34 == 1)
 

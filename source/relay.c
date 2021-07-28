@@ -11,7 +11,7 @@
 #include "power.h"
 
 
-#define     ON_OFF_PERIOD       100     // 10 secs
+#define     ON_OFF_PERIOD       30     // 3 secs
 
 
 
