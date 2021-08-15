@@ -93,10 +93,9 @@ static void OneSecondHandler(void)
 //*****************************************************************************
 static void DisplayDebugMsg(void)
 {
-    printf("ADP(%d) PCK(%d) Chg(%d) Dchg(%d) RLY(%d) COF(%04X) DOF(%04X) SVRLY(%d)",
+    printf("ADP(%d) PCK(%d) Chg(%d) Dchg(%d) RLY(%d) SVRLY(%d)",
         g_sAdcData.u16AdapterVolt, g_sAdcData.u16PackVolt, g_sAdcData.u16ChargeCurr,
-        g_sAdcData.u16DischargeCurr, g_sAdcData.u16RelayCurr, g_sAdcData.u16COF,
-        g_sAdcData.u16DOF, g_sAdcData.u16RelayVolt);
+        g_sAdcData.u16DischargeCurr, g_sAdcData.u16RelayCurr, g_sAdcData.u16RelayVolt);
     if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
         printf(" (1W On)");
     if ( SW_DIS_ACTIVE() )

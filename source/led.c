@@ -96,13 +96,9 @@ void LED_Control(void)
             LED_Charge();
         }
     }
-    else if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_DISCHARGE) || g_u8LedCntr )
+    else if ( g_u8LedCntr )
     {
-        if ( g_u8LedCntr )
-        {
-            g_u8LedCntr--;
-        }
-
+        g_u8LedCntr--;
         LED_Discharge();
     }
     else

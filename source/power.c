@@ -32,7 +32,7 @@ static void ResetChargeParameters(void);
 static void ResetDischargeParameters(void);
 static uint16_t ConvertCurrent(uint16_t u16AdcData, float fRsense);
 static uint16_t ConvertVoltage(uint16_t u16Val);
-// static uint16_t ConvertRelayCurrent(uint16_t u16Val);
+static uint16_t ConvertRelayCurrent(uint16_t u16Val);
 
 sAdcValue_t g_sAdcData = {0};                       //!< Stores all ADC values.
 eDCInputState_t g_eDCInputState = DC_INIT;          //!< Adapter input state.
@@ -90,12 +90,19 @@ void UpdateAllAdcData(void)
     u16Val = ADC_Read(ADC_SV_AD);
     g_sAdcData.u16AdapterVolt = ConvertVoltage(u16Val);
 
+
     u16Val = ADC_Read(ADC_SV_RELAY);
-    g_sAdcData.u16RelayVolt = ConvertVoltage(u16Val);
+	// g_sAdcData.u16RelayVolt = ConvertVoltage(u16Val);
+
+	if ( u16Val >= 248 ){ //for 0.3V offset
+		g_sAdcData.u16RelayVolt = ConvertRelayCurrent(u16Val);
+	}else{
+		g_sAdcData.u16RelayVolt = 0;
+	}
     // g_sAdcData.u16RelayVolt = ADC_Read(ADC_SV_RELAY);
 
-    g_sAdcData.u16DOF = ADC_Read(ADC_DOF);
-    g_sAdcData.u16COF = ADC_Read(ADC_COF);
+    //g_sAdcData.u16DOF = ADC_Read(ADC_DOF);
+    //g_sAdcData.u16COF = ADC_Read(ADC_COF);
 }
 
 
@@ -113,7 +120,7 @@ void PowerControl(void)
     static uint8_t u8ChargeCntr = 0;
     #if RELAY_DETECTION
     static uint8_t u8RelayDetectCntr = 0;
-    bool bDischarging = FALSE;
+    // bool bDischarging = FALSE;
     #else
     static uint16_t u16SleepCntr = 0;
     #endif
@@ -135,19 +142,29 @@ void PowerControl(void)
     else
     {
         #if RELAY_DETECTION
-        if ( g_bRelayTurnOn || IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
+        if ( g_bRelayTurnOn )//|| IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
         {
             DischargeProcess();
 
-            bDischarging = ((g_sAdcData.u16RelayCurr > 4000) || (g_sAdcData.u16DischargeCurr > 300)) ? TRUE : FALSE;
-            if ( StateDebounce(!bDischarging, 10, &u8RelayDetectCntr) )
-            {
-                g_bRelayTurnOn = FALSE;
-            }
+			if ( ++u8RelayDetectCntr >= 100 )
+			{
+				u8RelayDetectCntr = 0;
+				g_bRelayTurnOn = FALSE;
+			}
+
+            //bDischarging = ((g_sAdcData.u16RelayCurr > 4000) || (g_sAdcData.u16DischargeCurr > 300)) ? TRUE : FALSE;
+            //if ( StateDebounce(!bDischarging, 10, &u8RelayDetectCntr) )
+            //{
+            //    g_bRelayTurnOn = FALSE;
+            //}
         }
         else
         {
-            IdleProcess();
+			if ( IS_BIT_CLR(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) &&
+                (g_sAdcData.u16DischargeCurr < 40) )
+            {
+				IdleProcess();
+			}
 
             if ( ++u8RelayDetectCntr >= 50 )    // 5 secs
             {
@@ -326,7 +343,7 @@ static void IdleProcess(void)
     {
         #if LOW_POWER_MODE_EN
         // Don't enter LPM if switch is still pressed.
-        if ( SW_DIS_INACTIVE() && SW_1WLED_INACTIVE() )
+        if ( SW_DIS_INACTIVE() && SW_1WLED_INACTIVE() && !g_bRelayTurnOn)
         {
             //Enter low power mode.
             PowerDownSequence();
@@ -492,5 +509,15 @@ static uint16_t ConvertVoltage(uint16_t u16Val)
     return (uint16_t)fVal;
 }
 
+static uint16_t ConvertRelayCurrent(uint16_t u16Val)
+{
+    float fVal = 0;
 
+    // AdcData / 4096 * 5000 * (560 + 100) / 100
+    // --> * 50 * 660 / 4096
+    // --> * 33000 / 4096
+    fVal = (float)(u16Val + 492) * 4125 / 512;
+
+    return (uint16_t)fVal;
+}
 
