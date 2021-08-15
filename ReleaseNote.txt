@@ -1,5 +1,23 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.8.15)               		 08-15-2021
+
+ File name : CarPowerBank_Source_0815
+ Base on   : CarPowerBank_Source_0728
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Change to turn on battery LED when discharge switch is pressed.
+    2.> Do not allow entering sleep mode if discharge(USB) current > 40mA.
+    3.> Modify clock setting to disable PLL for ADC incorrect reading issue.
+    4.> Modify relay voltage calculation.
+    5.> Enable relay auto on/off by relay voltage.
+    6.> Turn off relay after turn on 10 secs.
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.7.28)               		 07-28-2021
 
  File name : CarPowerBank_Source_0728
