@@ -90,12 +90,14 @@ void SYS_Init(void)
     /* Enable IP clock */
     CLK_EnableModuleClock(ADC_MODULE);
     CLK_EnableModuleClock(TMR0_MODULE);
+    CLK_EnableModuleClock(TMR1_MODULE);
     CLK_EnableModuleClock(UART0_MODULE);
     CLK_EnableModuleClock(WDT_MODULE);
 
     /* Set IP clock */
     CLK_SetModuleClock(ADC_MODULE, CLK_CLKSEL1_ADC_S_HIRC, CLK_CLKDIV_ADC(7));
     CLK_SetModuleClock(TMR0_MODULE, CLK_CLKSEL1_TMR0_S_HIRC, MODULE_NoMsk);
+    CLK_SetModuleClock(TMR1_MODULE, CLK_CLKSEL1_TMR1_S_LIRC, MODULE_NoMsk);
     CLK_SetModuleClock(UART0_MODULE, CLK_CLKSEL1_UART_S_HIRC, CLK_CLKDIV_UART(1));
     CLK_SetModuleClock(WDT_MODULE, CLK_CLKSEL1_WDT_S_LIRC, MODULE_NoMsk);
 
@@ -239,3 +241,27 @@ void Timer0_Init(void)
     /* Start Timer0 counting */
     TIMER_Start(TIMER0);
 }
+
+
+//*****************************************************************************
+//
+//! \brief  Initialize Timer 1 module.
+//!
+//! \return None.
+//
+//*****************************************************************************
+void Timer1_Init(void)
+{
+    /* Open Timer0 frequency to 0.5 Hz in periodic mode, and enable interrupt */
+    TIMER_Open(TIMER1, TIMER_PERIODIC_MODE, 1);
+    TIMER_EnableInt(TIMER1);
+
+    /* Enable Timer0 NVIC */
+    NVIC_EnableIRQ(TMR1_IRQn);
+
+    TIMER_EnableWakeup(TIMER1);
+
+    /* Start Timer0 counting */
+    TIMER_Start(TIMER1);
+}
+

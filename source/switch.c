@@ -101,14 +101,15 @@ void Switch_DischargeControl(void)
             }
         }
 
-        // if ( u8SwitchDchgCntr >= 50 )
-        // {
-        //     bLongPress = TRUE;
-        //     if ( SW_1WLED_ACTIVE() )
-        //     {
-        //         TOGGLE_BIT(g_u16SystemState, SYS_STAT_UART_ENABLE);
-        //     }
-        // }
+        if ( u8SwitchDchgCntr == 50 )
+        {
+            SET_BIT(g_u16SystemFlags, SYS_FLAG_DCHG_EN);
+            // bLongPress = TRUE;
+            // if ( SW_1WLED_ACTIVE() )
+            // {
+                // TOGGLE_BIT(g_u16SystemState, SYS_STAT_UART_ENABLE);
+            // }
+        }
     }
     else
     {
@@ -117,13 +118,13 @@ void Switch_DischargeControl(void)
         //     bLongPress = FALSE;
         // }
         // else
-        {
-            if ( u8SwitchDchgCntr >= 2 )
-            {
-                g_u8LedCntr = 50;
-                TOGGLE_BIT(g_u16SystemFlags, SYS_FLAG_DCHG_EN);
-            }
-        }
+        // {
+            // if ( u8SwitchDchgCntr >= 2 )
+            // {
+                // g_u8LedCntr = 50;
+                // TOGGLE_BIT(g_u16SystemFlags, SYS_FLAG_DCHG_EN);
+            // }
+        // }
         u8SwitchDchgCntr = 0;
     }
 }

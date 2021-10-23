@@ -83,6 +83,31 @@ void TMR0_IRQHandler(void)
 
 //*****************************************************************************
 //
+//! \brief  Timer 1 Interrupt Service Routine
+//!
+//! \return None.
+//
+//*****************************************************************************
+void TMR1_IRQHandler(void)
+{
+    if ( TIMER_GetIntFlag(TIMER1) == 1 )
+    {
+        /* Clear Timer1 time-out interrupt flag */
+        TIMER_ClearIntFlag(TIMER1);
+
+    }
+
+    if ( TIMER_GetWakeupFlag(TIMER1) == 1 )
+    {
+        /* Clear Timer1 wake-up flag */
+        TIMER_ClearWakeupFlag(TIMER1);
+    }
+}
+
+
+
+//*****************************************************************************
+//
 //! \brief  ADC Interrupt Service Routine
 //!
 //! \return None.
@@ -112,6 +137,11 @@ void GPIOP0P1_IRQHandler(void)
     {
         GPIO_CLR_INT_FLAG(P0, BIT0);
         GPIO_CLR_INT_FLAG(P0, BIT1);
+
+        if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SLEEP) )
+        {
+            SET_BIT(g_u16SystemFlags, SYS_FLAG_SWITCH_INT);
+        }
         // GPIO_CLR_INT_FLAG(P1, BIT0);
         // GPIO_DisableInt(P0, 0);
         // GPIO_DisableInt(P0, 1);

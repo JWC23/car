@@ -132,7 +132,7 @@ void Batt_UpdateRsocByOCV(void)
         g_sBatteryData.fRemainCap = 0;
         g_sBatteryData.u8Rsoc = 0;
     }
-    else if ( g_sBatteryData.fRemainCap >= DESIGN_CAPACITY )
+    else if ( (g_sBatteryData.fRemainCap >= DESIGN_CAPACITY) || IS_BIT_SET(g_u8BattFlags, BATT_FLAG_FC) )
     {
         g_sBatteryData.fRemainCap = DESIGN_CAPACITY;
         g_sBatteryData.u8Rsoc = 100;

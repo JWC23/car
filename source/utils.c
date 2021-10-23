@@ -148,7 +148,7 @@ bool SetBootFromLDROM(void)
     uint32_t au32Config[2];
 
     SYS_UnlockReg();
-    
+
     FMC_ReadConfig(au32Config, 2);
     if ( au32Config[0] & 0x80 )
     {
@@ -161,7 +161,7 @@ bool SetBootFromLDROM(void)
         // Perform chip reset to make new User Config take effect
         SYS_ResetChip();
     }
-    
+
     return TRUE;
 }
 
@@ -170,11 +170,11 @@ bool SetBootFromLDROM(void)
 void ResetToLDROM(void)
 {
     FUNC_PTR    *ResetFunc;
-    
+
     UART_WAIT_TX_EMPTY(UART0);
 
     SYS_UnlockReg();
-    
+
     /* Mask all interrupt before changing VECMAP to avoid wrong interrupt handler fetched */
     __set_PRIMASK(1);
 
@@ -193,7 +193,7 @@ void ResetToLDROM(void)
 
     /* Call reset handler of new boot */
     ResetFunc();
-                
+
     /* Software reset to boot to LDROM */
     // NVIC_SystemReset();
 

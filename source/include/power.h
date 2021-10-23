@@ -39,15 +39,15 @@ extern eDCInputState_t g_eDCInputState;
 
 
 
-typedef enum eChargeState
-{
-    CHG_STATE_INIT,
-    CHG_STATE_FASTCHARGE,
-    CHG_STATE_BATFULL,
-    CHG_STATE_FAULT
-}eChargeState_t;
+// typedef enum eChargeState
+// {
+//     CHG_STATE_INIT,
+//     CHG_STATE_FASTCHARGE,
+//     CHG_STATE_BATFULL,
+//     CHG_STATE_FAULT
+// }eChargeState_t;
 
-extern eChargeState_t g_eChargeState;
+// extern eChargeState_t g_eChargeState;
 
 
 
@@ -91,6 +91,7 @@ extern sDischargeParam_t g_sDischargeParam;
 
 extern void UpdateAllAdcData(void);
 extern void PowerControl(void);
+extern void SleepModeHandler(void);
 
 
 #endif

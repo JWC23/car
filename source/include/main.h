@@ -20,8 +20,8 @@
 
 
 #define     FW_VERSION_MAJOR        0
-#define     FW_VERSION_MINOR        0x08
-#define     FW_VERSION_TEST         0x15
+#define     FW_VERSION_MINOR        0x10
+#define     FW_VERSION_TEST         0x21
 #define     PROJECT_NAME            "CarPowerBank"
 
 #define     DEBUG_MSG_EN            1
@@ -104,8 +104,8 @@ enum eSystemFlags
     SYS_FLAG_DCHG_EN        = MASK(3),
     SYS_FLAG_RELAY_CURR_DETECTED = MASK(4),
     SYS_FLAG_RESET_RELAY_CNTR    = MASK(5),
-    SYS_FLAG_6              = MASK(6),
-    SYS_FLAG_7              = MASK(7)
+    SYS_FLAG_SLEEP          = MASK(6),
+    SYS_FLAG_SWITCH_INT     = MASK(7)
 };
 
 

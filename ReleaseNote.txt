@@ -1,5 +1,31 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.10.21)              		 10-21-2021
+
+ File name : CarPowerBank_Source_1021
+ Base on   : CarPowerBank_Source_0927
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Add press button 3 secs to turn on relay.
+
+ Add function:
+
+***************************************************************************
+ Car Power Bank FW release (Rev. 0.9.27)               		 09-27-2021
+
+ File name : CarPowerBank_Source_0927
+ Base on   : CarPowerBank_Source_0815
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Add auto wake every 3 secs.
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.8.15)               		 08-15-2021
 
  File name : CarPowerBank_Source_0815

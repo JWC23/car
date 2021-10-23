@@ -13,6 +13,7 @@ extern void SYS_Init(void);
 extern void GPIO_Init(void);
 extern void UART0_Init(void);
 extern void Timer0_Init(void);
+extern void Timer1_Init(void);
 
 
 

@@ -59,8 +59,6 @@ static void OneHundredMsHandler(void)
 //*****************************************************************************
 static void OneSecondHandler(void)
 {
-    // static uint8_t u8TestCntr = 0;
-
     if ( IS_BIT_CLR(g_u16SystemFlags, SYS_FLAG_1SEC) )
         return;
 
@@ -72,13 +70,6 @@ static void OneSecondHandler(void)
     DisplayDebugMsg();
     #endif
 
-    // printf("+");
-
-    // if ( ++u8TestCntr >= 5 )
-    // {
-        // u8TestCntr = 0;
-        // ResetToLDROM();
-    // }
 }
 
 
@@ -142,11 +133,6 @@ int main(void)
 
     Timer0_Init();
 
-    // if ( SW_DIS_ACTIVE() )
-    // {
-        // printf("test\n");
-    // }
-
     /* Enable FMC ISP function */
     FMC_Open();
 
@@ -183,19 +169,16 @@ int main(void)
 
     while(1)
     {
-        OneHundredMsHandler();
-        OneSecondHandler();
-        UartRxHandler();
-
-        // if ( ++u32TimerCntr >= 100000 )
-        // {
-            // u32TimerCntr = 0;
-            // LED_GREEN_TOGGLE();
-            // WDT_RESET_COUNTER();
-            // WDT_Open(WDT_TIMEOUT_2POW4, WDT_RESET_DELAY_3CLK, TRUE, FALSE);
-            // printf("timeout\n");
-            // while(1);
-        // }
+        if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SLEEP) )
+        {
+            SleepModeHandler();
+        }
+        else
+        {
+            OneHundredMsHandler();
+            OneSecondHandler();
+            UartRxHandler();
+        }
     }
 }
 
