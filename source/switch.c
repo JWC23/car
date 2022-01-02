@@ -119,11 +119,11 @@ void Switch_DischargeControl(void)
         // }
         // else
         // {
-            // if ( u8SwitchDchgCntr >= 2 )
-            // {
-                // g_u8LedCntr = 50;
-                // TOGGLE_BIT(g_u16SystemFlags, SYS_FLAG_DCHG_EN);
-            // }
+				if ( u8SwitchDchgCntr >= 2 )
+				{
+					 g_u8LedCntr = 50;
+					// TOGGLE_BIT(g_u16SystemFlags, SYS_FLAG_DCHG_EN);
+				}
         // }
         u8SwitchDchgCntr = 0;
     }

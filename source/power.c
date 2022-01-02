@@ -73,7 +73,7 @@ void UpdateAllAdcData(void)
         if ( IS_BIT_CLR(g_u16SystemFlags, SYS_FLAG_RELAY_CURR_DETECTED) )
         {
             u16Val = ADC_Read(ADC_RELAY_CURR);
-            g_sAdcData.u16RelayCurr = ConvertCurrent(u16Val, 0.004);
+            g_sAdcData.u16RelayCurr = ConvertCurrent(u16Val, 0.0004);
             if ( g_sAdcData.u16RelayCurr > 10000 )
             {
                 SET_BIT(g_u16SystemFlags, SYS_FLAG_RELAY_CURR_DETECTED);
@@ -106,6 +106,24 @@ void UpdateAllAdcData(void)
 
 
 
+void CheckACState(void)
+{
+	static uint8_t u8ChargeCntr = 0;
+    if ( IS_BIT_CLR(g_u16SystemState, SYS_STAT_AC_OK) )
+    {
+        if ( StateDebounce(g_sAdcData.u16ChargeCurr > 500, 10, &u8ChargeCntr) )
+        {
+            SET_BIT(g_u16SystemState, SYS_STAT_AC_OK);
+        }
+    }
+    else
+    {
+        if ( StateDebounce(g_sAdcData.u16ChargeCurr <= 500, 10, &u8ChargeCntr) )
+        {
+            CLR_BIT(g_u16SystemState, SYS_STAT_AC_OK);
+        }
+    }
+}
 
 //*****************************************************************************
 //
@@ -116,7 +134,7 @@ void UpdateAllAdcData(void)
 //*****************************************************************************
 void PowerControl(void)
 {
-    static uint8_t u8ChargeCntr = 0;
+    
     #if RELAY_DETECTION
     static uint8_t u8RelayDetectCntr = 0;
     // bool bDischarging = FALSE;
@@ -133,7 +151,10 @@ void PowerControl(void)
         return;
     }
 
-    if ( StateDebounce(g_sAdcData.u16ChargeCurr > 20, 10, &u8ChargeCntr) )
+    CheckACState();
+
+    // if ( StateDebounce(g_sAdcData.u16ChargeCurr > 20, 10, &u8ChargeCntr) )
+    if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_AC_OK) )
     {
         ChargeProcess();
         g_bRelayTurnOn = FALSE;
@@ -141,11 +162,11 @@ void PowerControl(void)
     else
     {
         #if RELAY_DETECTION
-        if ( g_bRelayTurnOn )//|| IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
+        if ( g_bRelayTurnOn || (g_sAdcData.u16DischargeCurr > 80))//|| IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
         {
             DischargeProcess();
 
-            if ( ++u8RelayDetectCntr >= 100 )
+			if ( ++u8RelayDetectCntr >= 200 )
             {
                 u8RelayDetectCntr = 0;
                 g_bRelayTurnOn = FALSE;
@@ -160,8 +181,8 @@ void PowerControl(void)
         }
         else
         {
-            if ( IS_BIT_CLR(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) &&
-                (g_sAdcData.u16DischargeCurr < 40) )
+            if ( /*IS_BIT_CLR(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) && */
+                (g_sAdcData.u16DischargeCurr < 80) )
             {
                 IdleProcess();
             }
