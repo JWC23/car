@@ -1,5 +1,21 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 0.12.23)              		 12-23-2021
+
+ File name : CarPowerBank_Source_1223
+ Base on   : CarPowerBank_Source_1021
+
+ Notification:
+ Fixed:
+    1.> Fix discharge LED failure.
+
+ Modified:
+    1.> Modify ChargeProcess, DischargeProcess and IdleProcess condition.
+    2.> Modify relay current convert.
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.10.21)              		 10-21-2021
 
  File name : CarPowerBank_Source_1021
