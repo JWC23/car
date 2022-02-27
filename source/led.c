@@ -11,6 +11,7 @@
 #include "power.h"
 #include "battery.h"
 #include "protections.h"
+#include "relay.h"
 
 
 static void LED_Charge(void);
@@ -32,7 +33,8 @@ uint8_t g_u8LedCntr = 0;
 //*****************************************************************************
 void LED_Control(void)
 {
-    static uint8_t u8LedBlinkCntr = 0;
+    static uint8_t u8LedBlinkCntr = 0, u8RelayLedCntr = 0;
+    static bool bRelayTempFlag = FALSE;
 
     if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
     {
@@ -48,6 +50,34 @@ void LED_Control(void)
         u8LedBlinkCntr = 0;
     }
 
+    if ( !bRelayTempFlag ) {
+        if ( g_bRelayTurnOn ) {
+            bRelayTempFlag = TRUE;
+            u8RelayLedCntr = 100;
+        }
+    }
+    else {
+        if ( u8RelayLedCntr ) {
+            u8RelayLedCntr--;
+        }
+        else {
+            bRelayTempFlag = FALSE;
+        }
+    }
+    
+    if ( !u8RelayLedCntr )
+    {
+        if ( !bRelayTempFlag && g_bRelayTurnOn )
+        {
+            bRelayTempFlag = TRUE;
+            u8RelayLedCntr = 100;
+        }
+    }
+    else
+    {
+        u8RelayLedCntr--;
+    }
+    
     #if ERROR_LED_EN
     if ( g_u16ChargeProtections || g_u8DischargeProtections )
     {
@@ -101,12 +131,18 @@ void LED_Control(void)
         g_u8LedCntr--;
         LED_Discharge();
     }
+    else if ( u8RelayLedCntr )
+    {
+        LED_Discharge();
+        LED_GREEN_ON();
+    }
     else
     {
         LED_C25_OFF();
         LED_C50_OFF();
         LED_C75_OFF();
         LED_C100_OFF();
+        LED_GREEN_OFF();
     }
 
 }
@@ -128,7 +164,6 @@ static void LED_Charge(void)
         LED_C50_ON();
         LED_C75_ON();
         LED_C100_ON();
-        LED_GREEN_ON();
         LED_RED_OFF();
     }
     else
@@ -177,7 +212,6 @@ static void LED_Charge(void)
 static void LED_Discharge(void)
 {
     LED_RED_OFF();
-    LED_GREEN_OFF();
 
     if ( g_sBatteryData.u8Rsoc >= 75 )
     {

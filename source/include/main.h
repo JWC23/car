@@ -19,9 +19,9 @@
 #include "fmc.h"
 
 
-#define     FW_VERSION_MAJOR        0
-#define     FW_VERSION_MINOR        0x12
-#define     FW_VERSION_TEST         0x23
+#define     FW_VERSION_MAJOR        0x22
+#define     FW_VERSION_MINOR        0x02
+#define     FW_VERSION_TEST         0x27
 #define     PROJECT_NAME            "CarPowerBank"
 
 #define     DEBUG_MSG_EN            1

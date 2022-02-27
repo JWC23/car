@@ -1,5 +1,18 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 22.02.27)             		 02-27-2022
+
+ File name : CarPowerBank_Source_220227
+ Base on   : CarPowerBank_Source_1223
+
+ Notification:
+ Fixed:
+ Modified:
+    1.> Turn on green LED and capacity LED 10 secs when relay is on.
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 0.12.23)              		 12-23-2021
 
  File name : CarPowerBank_Source_1223
