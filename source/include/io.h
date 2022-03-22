@@ -18,6 +18,10 @@
 #define     SW_1WLED_ACTIVE()           (P01 == 0)
 #define     SW_1WLED_INACTIVE()         (P01 == 1)
 
+#define     P03_AC_IN                   P0, BIT3        //!< Adapter detection
+#define     AC_ACTIVE()                 (P03 == 1)
+#define     AC_INACTIVE()               (P03 == 0)
+
 #define     P06_TXRX_EN                 P0, BIT6
 #define     TXRX_ENABLE()               (P06 = 0)
 #define     TXRX_DISABLE()              (P06 = 1)

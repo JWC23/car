@@ -133,14 +133,16 @@ void ADC_IRQHandler(void)
 void GPIOP0P1_IRQHandler(void)
 {
     /* To check if P0.0, P0.1 interrupt occurred */
-    if ( GPIO_GET_INT_FLAG(P0, BIT0) || GPIO_GET_INT_FLAG(P0, BIT1) )
+    if ( GPIO_GET_INT_FLAG(P0, BIT0) || GPIO_GET_INT_FLAG(P0, BIT1) ||
+        GPIO_GET_INT_FLAG(P0, BIT3) )
     {
         GPIO_CLR_INT_FLAG(P0, BIT0);
         GPIO_CLR_INT_FLAG(P0, BIT1);
+        GPIO_CLR_INT_FLAG(P0, BIT3);
 
         if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SLEEP) )
         {
-            SET_BIT(g_u16SystemFlags, SYS_FLAG_SWITCH_INT);
+            SET_BIT(g_u16SystemFlags, SYS_FLAG_WAKEUP);
         }
         // GPIO_CLR_INT_FLAG(P1, BIT0);
         // GPIO_DisableInt(P0, 0);

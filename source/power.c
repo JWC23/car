@@ -42,7 +42,7 @@ sChargeParam_t g_sChargeParam = {0};                //!< Stores all charge relat
 eDischargeState_t g_eDischargeState = DCHG_STATE_DISCHARGE; //!< Discharging state.
 sDischargeParam_t g_sDischargeParam = {0};          //!< Stores all discharge related variables.
 
-uint8_t g_u8PowerStateDelay = 0, g_u8WakeCntr = 0;
+uint8_t g_u8PowerStateDelay = 0;//, g_u8WakeCntr = 0;
 
 //*****************************************************************************
 //
@@ -106,19 +106,27 @@ void UpdateAllAdcData(void)
 
 
 
+//*****************************************************************************
+//
+//! \brief  Check AC insertion state.
+//!
+//! \return None.
+//
+//*****************************************************************************
 void CheckACState(void)
 {
 	static uint8_t u8ChargeCntr = 0;
+
     if ( IS_BIT_CLR(g_u16SystemState, SYS_STAT_AC_OK) )
     {
-        if ( StateDebounce(g_sAdcData.u16ChargeCurr > 500, 10, &u8ChargeCntr) )
+        if ( StateDebounce(AC_ACTIVE(), 10, &u8ChargeCntr) )
         {
             SET_BIT(g_u16SystemState, SYS_STAT_AC_OK);
         }
     }
     else
     {
-        if ( StateDebounce(g_sAdcData.u16ChargeCurr <= 500, 10, &u8ChargeCntr) )
+        if ( StateDebounce(AC_INACTIVE(), 10, &u8ChargeCntr) )
         {
             CLR_BIT(g_u16SystemState, SYS_STAT_AC_OK);
         }
@@ -134,7 +142,6 @@ void CheckACState(void)
 //*****************************************************************************
 void PowerControl(void)
 {
-    
     #if RELAY_DETECTION
     static uint8_t u8RelayDetectCntr = 0;
     // bool bDischarging = FALSE;
@@ -158,6 +165,7 @@ void PowerControl(void)
     {
         ChargeProcess();
         g_bRelayTurnOn = FALSE;
+        u8RelayDetectCntr = 0;
     }
     else
     {
@@ -172,12 +180,6 @@ void PowerControl(void)
                 g_bRelayTurnOn = FALSE;
                 CLR_BIT(g_u16SystemFlags, SYS_FLAG_DCHG_EN);
             }
-
-            //bDischarging = ((g_sAdcData.u16RelayCurr > 4000) || (g_sAdcData.u16DischargeCurr > 300)) ? TRUE : FALSE;
-            //if ( StateDebounce(!bDischarging, 10, &u8RelayDetectCntr) )
-            //{
-            //    g_bRelayTurnOn = FALSE;
-            //}
         }
         else
         {
@@ -193,15 +195,18 @@ void PowerControl(void)
             }
             else
             {
-                if ( ++u8RelayDetectCntr >= 50 )    // 5 secs
+                // Allow turn on relay when pack > 16V and relay > 2V
+                if ( (g_sAdcData.u16RelayVolt >= 2000)  && (g_sAdcData.u16PackVolt >= 16000) )
                 {
-                    u8RelayDetectCntr = 0;
-
-                    // Allow turn on relay when pack > 16V and relay > 2V
-                    if ( (g_sAdcData.u16RelayVolt >= 2000)  && (g_sAdcData.u16PackVolt >= 16000) )
+                    if ( ++u8RelayDetectCntr >= 10 )    // Delay 1 sec before turn on relay.
                     {
                         g_bRelayTurnOn = TRUE;
+                        u8RelayDetectCntr = 0;
                     }
+                }
+                else
+                {
+                    u8RelayDetectCntr = 0;
                 }
             }
         }
@@ -364,38 +369,13 @@ static void IdleProcess(void)
 //*****************************************************************************
 void SleepModeHandler(void)
 {
-    static bool bWakeup = FALSE;
-    static uint16_t u16Val = 0;
-
     //Enter low power mode.
     EnterPowerDownMode();
 
-    bWakeup = FALSE;
-
-    // After wake up 5 times(5s), read charge current.
-    if ( ++g_u8WakeCntr >= 5 )
+    if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_WAKEUP) )
     {
-        g_u8WakeCntr = 0;
-        u16Val = ADC_Read(ADC_CHG_CURR);
-        g_sAdcData.u16ChargeCurr = ConvertCurrent(u16Val, 0.013);
-        if ( g_sAdcData.u16ChargeCurr > 20 )
-        {
-            bWakeup = TRUE;
-        }
-    }
-
-    if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SWITCH_INT) )
-    {
-        CLR_BIT(g_u16SystemFlags, SYS_FLAG_SWITCH_INT);
-        bWakeup = TRUE;
-    }
-
-    if ( bWakeup )
-    {
-        // Wake up
+        CLR_BIT(g_u16SystemFlags, SYS_FLAG_WAKEUP | SYS_FLAG_SLEEP);
         WakeupSequence();
-        CLR_BIT(g_u16SystemFlags, SYS_FLAG_SLEEP);
-        g_u8WakeCntr = 0;
     }
 }
 
@@ -411,7 +391,7 @@ void SleepModeHandler(void)
 static void PowerDownSequence(void)
 {
     TIMER_Close(TIMER0);
-    Timer1_Init();
+    // Timer1_Init();
     // ADC_Close(ADC);
     RY_NO_OFF();
     RY_NC_OFF();

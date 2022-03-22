@@ -121,7 +121,7 @@ void SYS_Init(void)
 
     GPIO_EnableInt(P0, 0, GPIO_INT_FALLING);    // Discharge switch
     GPIO_EnableInt(P0, 1, GPIO_INT_FALLING);    // 1W LED switch
-    // GPIO_EnableInt(P1, 0, GPIO_INT_RISING);
+    GPIO_EnableInt(P0, 3, GPIO_INT_RISING);     // AC insert
     NVIC_EnableIRQ(GPIO_P0P1_IRQn);
 
     /* Enable WDT interrupt function */
@@ -165,6 +165,7 @@ void GPIO_Init(void)
 
     GPIO_SetMode(P00_SW_DIS, GPIO_PMD_INPUT);
     GPIO_SetMode(P01_SW_1WLED, GPIO_PMD_INPUT);
+    GPIO_SetMode(P03_AC_IN, GPIO_PMD_INPUT);
     // GPIO_SetMode(P04_DOF, GPIO_PMD_INPUT);
     // GPIO_SetMode(P05_COF, GPIO_PMD_INPUT);
     GPIO_SetMode(P06_TXRX_EN, GPIO_PMD_OUTPUT);

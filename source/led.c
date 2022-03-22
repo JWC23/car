@@ -33,51 +33,16 @@ uint8_t g_u8LedCntr = 0;
 //*****************************************************************************
 void LED_Control(void)
 {
-    static uint8_t u8LedBlinkCntr = 0, u8RelayLedCntr = 0;
-    static bool bRelayTempFlag = FALSE;
+    static uint8_t u8LedBlinkCntr = 0;
 
     if ( IS_BIT_SET(g_u16SystemFlags, SYS_FLAG_SW_1W_LED) )
-    {
         LED_1W_ON();
-    }
     else
-    {
         LED_1W_OFF();
-    }
 
     if ( ++u8LedBlinkCntr >= 5 )
-    {
         u8LedBlinkCntr = 0;
-    }
 
-    if ( !bRelayTempFlag ) {
-        if ( g_bRelayTurnOn ) {
-            bRelayTempFlag = TRUE;
-            u8RelayLedCntr = 100;
-        }
-    }
-    else {
-        if ( u8RelayLedCntr ) {
-            u8RelayLedCntr--;
-        }
-        else {
-            bRelayTempFlag = FALSE;
-        }
-    }
-    
-    if ( !u8RelayLedCntr )
-    {
-        if ( !bRelayTempFlag && g_bRelayTurnOn )
-        {
-            bRelayTempFlag = TRUE;
-            u8RelayLedCntr = 100;
-        }
-    }
-    else
-    {
-        u8RelayLedCntr--;
-    }
-    
     #if ERROR_LED_EN
     if ( g_u16ChargeProtections || g_u8DischargeProtections )
     {
@@ -86,55 +51,22 @@ void LED_Control(void)
     }
     #endif
 
-        // if ( g_u8LedCntr )
-        // {
-            // g_u8LedCntr--;
-            // LED_Discharge();
-        // }
-        // else
-        // {
-            // if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_CHARGE) )
-            // {
-                // if ( g_sBatteryData.u8Rsoc == 100 )
-                // {
-                    // LED_GREEN_ON();
-                    // LED_RED_OFF();
-                // }
-                // else
-                // {
-                    // LED_GREEN_OFF();
-                    // LED_RED_ON();
-                // }
-            // }
-            // else
-            // {
-                // LED_GREEN_OFF();
-                // LED_RED_ON();
-                // LED_C25_OFF();
-                // LED_C50_OFF();
-                // LED_C75_OFF();
-                // LED_C100_OFF();
-            // }
-        // }
-
-        // LED_RED_OFF();
-
     if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_CHARGE) )
     {
         if ( !u8LedBlinkCntr )
-        {
             LED_Charge();
-        }
     }
-    else if ( g_u8LedCntr )
+    else if ( g_u8LedCntr )     // Display capacity when short press switch.
     {
         g_u8LedCntr--;
         LED_Discharge();
+        LED_GREEN_OFF();
     }
-    else if ( u8RelayLedCntr )
+    else if ( g_bRelayTurnOn )  // Display capacity and blink status when relay is on.
     {
         LED_Discharge();
-        LED_GREEN_ON();
+        if ( !u8LedBlinkCntr )
+            LED_GREEN_TOGGLE();
     }
     else
     {
@@ -165,6 +97,7 @@ static void LED_Charge(void)
         LED_C75_ON();
         LED_C100_ON();
         LED_RED_OFF();
+        LED_GREEN_ON();
     }
     else
     {
