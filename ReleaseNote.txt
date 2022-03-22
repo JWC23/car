@@ -1,5 +1,20 @@
 Release Notification
 ***************************************************************************
+ Car Power Bank FW release (Rev. 22.03.21)             		 03-21-2022
+
+ File name : CarPowerBank_Source_220321
+ Base on   : CarPowerBank_Source_220227
+
+ Notification:
+ Fixed:
+ Modified:
+    1. Update LED function when relay is on.
+    2. Disable perodically wake up.
+    3. Add AC_IN signal..
+
+ Add function:
+
+***************************************************************************
  Car Power Bank FW release (Rev. 22.02.27)             		 02-27-2022
 
  File name : CarPowerBank_Source_220227
