@@ -115,20 +115,37 @@ void UpdateAllAdcData(void)
 //*****************************************************************************
 void CheckACState(void)
 {
-	static uint8_t u8ChargeCntr = 0;
+    static uint8_t u8AcDetCntr = 0, u8ChgCurrCntr = 0;
 
+    // Debounce for AC_IN signal.
     if ( IS_BIT_CLR(g_u16SystemState, SYS_STAT_AC_OK) )
     {
-        if ( StateDebounce(AC_ACTIVE(), 10, &u8ChargeCntr) )
+        if ( StateDebounce(AC_ACTIVE(), 10, &u8AcDetCntr) )
         {
             SET_BIT(g_u16SystemState, SYS_STAT_AC_OK);
         }
     }
     else
     {
-        if ( StateDebounce(AC_INACTIVE(), 10, &u8ChargeCntr) )
+        if ( StateDebounce(AC_INACTIVE(), 10, &u8AcDetCntr) )
         {
             CLR_BIT(g_u16SystemState, SYS_STAT_AC_OK);
+        }
+    }
+
+    // Debounce for charge current.
+    if ( IS_BIT_CLR(g_u16SystemState, SYS_STAT_CHG_CURR) )
+    {
+        if ( StateDebounce(g_sAdcData.u16ChargeCurr > 200, 10, &u8ChgCurrCntr) )
+        {
+            SET_BIT(g_u16SystemState, SYS_STAT_CHG_CURR);
+        }
+    }
+    else
+    {
+        if ( StateDebounce(g_sAdcData.u16ChargeCurr <= 200, 10, &u8ChgCurrCntr) )
+        {
+            CLR_BIT(g_u16SystemState, SYS_STAT_CHG_CURR);
         }
     }
 }

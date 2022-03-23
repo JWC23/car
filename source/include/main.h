@@ -21,7 +21,7 @@
 
 #define     FW_VERSION_MAJOR        0x22
 #define     FW_VERSION_MINOR        0x03
-#define     FW_VERSION_TEST         0x21
+#define     FW_VERSION_TEST         0x23
 #define     PROJECT_NAME            "CarPowerBank"
 
 #define     DEBUG_MSG_EN            1
@@ -86,7 +86,7 @@ enum eSystemState
     SYS_STAT_AC_OK          = MASK(2),
     SYS_STAT_LOAD_OK        = MASK(3),
     SYS_STAT_UART_ENABLE    = MASK(4),
-    SYS_STAT_05             = MASK(5),
+    SYS_STAT_CHG_CURR       = MASK(5),
     SYS_STAT_06             = MASK(6),
     SYS_STAT_07             = MASK(7),
     SYS_STAT_08             = MASK(8),

@@ -53,8 +53,15 @@ void LED_Control(void)
 
     if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_CHARGE) )
     {
-        if ( !u8LedBlinkCntr )
-            LED_Charge();
+        if ( IS_BIT_SET(g_u16SystemState, SYS_STAT_CHG_CURR) )
+        {
+            if ( !u8LedBlinkCntr )
+                LED_Charge();
+        }
+        else
+        {
+            LED_Discharge();
+        }
     }
     else if ( g_u8LedCntr )     // Display capacity when short press switch.
     {
